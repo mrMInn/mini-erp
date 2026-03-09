@@ -1,0 +1,200 @@
+/* ═══════════ APPLE GLASS DASHBOARD (SONOMA) ═══════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.dashboard {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1d1d1f;
+  min-height: 100vh;
+  padding: 32px;
+}
+
+/* Content wrapper */
+.dashboard-content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Date Picker */
+.apple-picker {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 16px !important;
+  padding: 6px 14px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.apple-picker input {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  color: #1d1d1f !important;
+  font-size: 13px !important;
+}
+
+/* ═══════════ GLASS CARDS ═══════════ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: #1d1d1f;
+  margin: 0 0 20px 0;
+}
+
+/* ═══════════ TYPOGRAPHY ═══════════ */
+.metric-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.metric-item {
+  flex: 1;
+  min-width: 140px;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #86868b;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  color: #1d1d1f;
+  line-height: 1.2;
+}
+
+/* Trend Pill */
+.trend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.trend-positive {
+  background: rgba(52, 199, 89, 0.15);
+  color: #248a3d;
+}
+
+.trend-negative {
+  background: rgba(255, 59, 48, 0.15);
+  color: #c93400;
+}
+
+/* ═══════════ GRID LAYOUT ═══════════ */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-gap {
+  margin-bottom: 20px;
+}
+
+/* ═══════════ RECHARTS ═══════════ */
+.recharts-text {
+  fill: #86868b !important;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px !important;
+}
+
+/* ═══════════ FILTER PILLS (Shared from Inventory) ═══════════ */
+.inv-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    background: rgba(0, 0, 0, 0.03);
+    color: #86868b;
+    transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+    color: #1d1d1f;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.filter-pill.active {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    font-weight: 600;
+}
+
+.filter-pill.active.status-in_stock {
+    color: #34C759;
+}
+
+.filter-pill.active.status-in_transit {
+    color: #FF9500;
+}
+
+.filter-pill.active.status-sold {
+    color: #86868b;
+}
+
+.filter-count {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+}

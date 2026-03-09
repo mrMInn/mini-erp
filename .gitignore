@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project-specific scripts and data
+*.mjs
+*.sql
+*.csv
+.DS_Store

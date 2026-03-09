@@ -1,0 +1,241 @@
+/* ═══════════ APPLE GLASS INVENTORY ═══════════ */
+
+.inventory-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.inv-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #1d1d1f;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+/* Search Bar — glass */
+.inv-search {
+    margin-bottom: 16px;
+}
+
+.inv-search .ant-input-affix-wrapper {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+    padding: 10px 16px !important;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.inv-search .ant-input-affix-wrapper:focus,
+.inv-search .ant-input-affix-wrapper-focused {
+    border-color: rgba(10, 132, 255, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1) !important;
+}
+
+.inv-search .ant-input {
+    background: transparent !important;
+    font-size: 14px;
+}
+
+/* Buttons — glass style */
+.neu-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #1d1d1f !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    height: 40px !important;
+    padding: 0 20px !important;
+}
+
+.neu-btn:hover {
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-1px);
+}
+
+.neu-btn:active {
+    transform: translateY(0);
+}
+
+.neu-btn-primary {
+    background: linear-gradient(135deg, #0A84FF, #0070E0) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(10, 132, 255, 0.3) !important;
+}
+
+.neu-btn-primary:hover {
+    background: linear-gradient(135deg, #0070E0, #005BBB) !important;
+    box-shadow: 0 4px 16px rgba(10, 132, 255, 0.4) !important;
+}
+
+/* Filter Pills — glass */
+.inv-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    background: rgba(0, 0, 0, 0.03);
+    color: #86868b;
+    transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+    color: #1d1d1f;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.filter-pill.active {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    font-weight: 600;
+}
+
+.filter-pill.active.status-all {
+    color: #1d1d1f;
+}
+
+.filter-pill.active.status-in_stock {
+    color: #34C759;
+}
+
+.filter-pill.active.status-in_transit {
+    color: #FF9500;
+}
+
+.filter-pill.active.status-defective {
+    color: #FF3B30;
+}
+
+.filter-pill.active.status-sold {
+    color: #86868b;
+}
+
+.filter-count {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+}
+
+.status-all .filter-count {
+    background: #1d1d1f;
+}
+
+.status-in_stock .filter-count {
+    background: #34C759;
+}
+
+.status-in_transit .filter-count {
+    background: #FF9500;
+}
+
+.status-defective .filter-count {
+    background: #FF3B30;
+}
+
+.status-sold .filter-count {
+    background: #aeaeb2;
+}
+
+/* Search Result Banner */
+.search-banner {
+    padding: 10px 16px;
+    background: rgba(10, 132, 255, 0.08);
+    border-left: 3px solid #0A84FF;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: #0A84FF;
+    font-size: 14px;
+}
+
+/* Table Container — glass card */
+.inv-table-container {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.inv-table-container .ant-table {
+    background: transparent !important;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.inv-table-container .ant-table-thead>tr>th {
+    background: rgba(0, 0, 0, 0.02) !important;
+    color: #86868b !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    padding: 10px 14px !important;
+}
+
+.inv-table-container .ant-table-tbody>tr>td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    padding: 10px 14px !important;
+    font-size: 13px;
+    background: transparent !important;
+}
+
+.inv-table-container .ant-table-tbody>tr:hover>td {
+    background: rgba(10, 132, 255, 0.03) !important;
+}
+
+.inv-table-container .ant-table-bordered .ant-table-cell {
+    border-inline-end: none !important;
+}
+
+/* Spec Tags */
+.spec-tag {
+    font-size: 11px;
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-weight: 500;
+}
