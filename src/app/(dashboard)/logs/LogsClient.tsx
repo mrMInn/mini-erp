@@ -84,6 +84,7 @@ export default function LogsClient({ logsData }: { logsData: any[] }) {
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
                     size="large"
+                    enterButton={false}
                 />
             </div>
 

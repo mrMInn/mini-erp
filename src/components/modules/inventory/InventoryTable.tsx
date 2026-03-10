@@ -446,6 +446,7 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
           allowClear
           onChange={(e) => setSearchText(e.target.value)}
           size="large"
+          enterButton={false}
         />
       </div>
 

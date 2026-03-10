@@ -315,6 +315,7 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
                     size="large"
+                    enterButton={false}
                 />
             </div>
 
