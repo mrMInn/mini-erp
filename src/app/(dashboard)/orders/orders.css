@@ -36,6 +36,11 @@
     }
 }
 
+.orders-search {
+    width: 100%;
+    max-width: 400px;
+}
+
 .orders-search .ant-input-affix-wrapper {
     background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(20px) saturate(180%);

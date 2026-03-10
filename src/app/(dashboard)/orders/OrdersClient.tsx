@@ -314,7 +314,6 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
                     placeholder="🔍 Tìm theo tên khách, SĐT, serial..."
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
-                    style={{ width: 400 }}
                     size="large"
                 />
             </div>

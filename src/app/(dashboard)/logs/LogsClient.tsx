@@ -83,7 +83,6 @@ export default function LogsClient({ logsData }: { logsData: any[] }) {
                     placeholder="🔍 Tìm theo nhân viên hoặc nội dung..."
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
-                    style={{ width: 400 }}
                     size="large"
                 />
             </div>
