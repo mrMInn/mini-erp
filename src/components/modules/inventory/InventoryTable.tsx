@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, Tag, Button, Space, Typography, Modal, Form, Input, InputNumber, Row, Col, Switch, Select, Popconfirm, message, Divider, Upload, DatePicker } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CameraOutlined, RocketOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, CameraOutlined, RocketOutlined, SearchOutlined } from '@ant-design/icons';
 import { removeVietnameseTones, getFullName } from '@/utils/helpers';
 import { createModelAction, importInventoryAction, updateInventoryAction, deleteInventoryAction } from '@/actions/inventory.actions';
 import { useRouter } from 'next/navigation';
