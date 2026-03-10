@@ -8,7 +8,7 @@ import { getFullName } from '@/utils/helpers';
 import {
     AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
-import { RiseOutlined, FallOutlined, SearchOutlined } from '@ant-design/icons';
+import { RiseOutlined, FallOutlined, SearchOutlined, DollarOutlined, TransactionOutlined, StockOutlined, InboxOutlined, WarningOutlined, LineChartOutlined } from '@ant-design/icons';
 import './dashboard.css';
 
 const COLORS = ['#FF9500', '#5E5CE6']; 
@@ -17,8 +17,14 @@ const fmtMoney = (v: number) => {
     if (v === 0) return '0đ';
     const abs = Math.abs(v);
     const sign = v < 0 ? '-' : '';
-    if (abs >= 1_000_000_000) return `${sign}${(abs / 1_000_000_000).toFixed(1)}tỷ`;
-    if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(1)}tr`;
+    if (abs >= 1_000_000_000) {
+        const val = abs / 1_000_000_000;
+        return `${sign}${val % 1 === 0 ? val.toFixed(0) : val.toFixed(1)}tỷ`;
+    }
+    if (abs >= 1_000_000) {
+        const val = abs / 1_000_000;
+        return `${sign}${val % 1 === 0 ? val.toFixed(0) : val.toFixed(1)}tr`;
+    }
     if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(0)}K`;
     return `${sign}${abs}đ`;
 };
@@ -126,30 +132,71 @@ export default function DashboardClient({
 
                 </div>
 
-                {/* ══════ SECTION 1: KPI ══════ */}
-                <div className="glass-card section-gap" style={{ padding: '24px 32px' }}>
-                    <h3 className="card-title" style={{ fontSize: 18, marginBottom: 24, color: '#86868b' }}>Kết Quả Kinh Doanh</h3>
-                    <div className="metric-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 32 }}>
-                        <div className="metric-item">
-                            <div className="metric-label" style={{ fontSize: 14, color: '#86868b', marginBottom: 8, fontWeight: 500 }}>Vốn Tích Lũy</div>
-                            <div className="metric-value" style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-1px', color: '#0b56c7ff' }}>{fmtFull(sdAccumulatedCapital)}</div>
-                            <div className="trend-pill" style={{ marginTop: 12, display: 'inline-block', background: 'rgba(0,0,0,0.04)', color: '#86868b' }}>
-                                Đã Rút: {fmtMoney(sdWithdrawn)}
+                {/* ══════ SECTION 1: KPI CARDS ══════ */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 24 }}>
+                    {/* Vốn Tích Lũy */}
+                    <div className="glass-card" style={{ 
+                        background: 'rgba(0, 122, 255, 0.05)', 
+                        border: '1px solid rgba(0, 122, 255, 0.1)',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        justifyContent: 'center',
+                        minHeight: '140px',
+                        padding: '24px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#007AFF', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                <TransactionOutlined />
                             </div>
+                            <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vốn Tích Lũy</div>
                         </div>
-                        <div className="metric-item" style={{ borderLeft: '1px solid rgba(0,0,0,0.06)', paddingLeft: 32 }}>
-                            <div className="metric-label" style={{ fontSize: 14, color: '#86868b', marginBottom: 8, fontWeight: 500 }}>Lợi Nhuận Gộp</div>
-                            <div className="metric-value" style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-1px', color: periodGrossProfit >= 0 ? '#34C759' : '#FF3B30' }}>{fmtFull(periodGrossProfit)}</div>
-                            <div className={`trend-pill ${periodGrossProfit >= 0 ? 'trend-positive' : 'trend-negative'}`} style={{ marginTop: 12, display: 'inline-block' }}>
-                                Biên lãi: {periodRevenue ? ((periodGrossProfit / periodRevenue) * 100).toFixed(1) : 0}%
-                            </div>
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#007AFF', letterSpacing: '-1px' }}>{fmtFull(sdAccumulatedCapital)}</div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#86868b' }}>
+                            Đã Rút: <span style={{ fontWeight: 600 }}>{fmtMoney(sdWithdrawn)}</span>
                         </div>
-                        <div className="metric-item" style={{ borderLeft: '1px solid rgba(0,0,0,0.06)', paddingLeft: 32 }}>
-                            <div className="metric-label" style={{ fontSize: 14, color: '#86868b', marginBottom: 8, fontWeight: 500 }}>Lợi Nhuận Ròng</div>
-                            <div className="metric-value" style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-1px', color: periodNetProfit >= 0 ? '#0A84FF' : '#FF3B30' }}>{fmtFull(periodNetProfit)}</div>
-                            <div className="trend-pill" style={{ marginTop: 12, display: 'inline-block', background: 'rgba(0,0,0,0.04)', color: '#86868b' }}>
-                                Tổng Chi Phí: {fmtMoney(periodExpenses)}
+                    </div>
+
+                    {/* Lợi Nhuận Gộp */}
+                    <div className="glass-card" style={{ 
+                        background: 'rgba(52, 199, 89, 0.05)', 
+                        border: '1px solid rgba(52, 199, 89, 0.1)',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        justifyContent: 'center',
+                        minHeight: '140px',
+                        padding: '24px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#34C759', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                <StockOutlined />
                             </div>
+                            <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lợi Nhuận Gộp</div>
+                        </div>
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#34C759', letterSpacing: '-1px' }}>{fmtFull(periodGrossProfit)}</div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#86868b' }}>
+                            Biên lãi: <span style={{ fontWeight: 600, color: '#34C759' }}>{periodRevenue ? ((periodGrossProfit / periodRevenue) * 100).toFixed(1) : 0}%</span>
+                        </div>
+                    </div>
+
+                    {/* Lợi Nhuận Ròng */}
+                    <div className="glass-card" style={{ 
+                        background: 'rgba(94, 92, 230, 0.05)', 
+                        border: '1px solid rgba(94, 92, 230, 0.1)',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        justifyContent: 'center',
+                        minHeight: '140px',
+                        padding: '24px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#5E5CE6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                <DollarOutlined />
+                            </div>
+                            <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lợi Nhuận Ròng</div>
+                        </div>
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#5E5CE6', letterSpacing: '-1px' }}>{fmtFull(periodNetProfit)}</div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#86868b' }}>
+                            Tổng Chi Phí: <span style={{ fontWeight: 600 }}>{fmtMoney(periodExpenses)}</span>
                         </div>
                     </div>
                 </div>
@@ -157,10 +204,20 @@ export default function DashboardClient({
                 {/* ══════ SECTION 2: CHART + PROFIT SPLIT ══════ */}
                 <div className="grid-2 section-gap">
 
-                    {/* Area Chart (Option 1) */}
-                    <div className="glass-card" ref={chartRef} style={{ position: 'relative' }}>
+                    {/* Area Chart (Option 1) - Cardified */}
+                    <div className="glass-card" ref={chartRef} style={{ 
+                        position: 'relative',
+                        background: 'rgba(10, 132, 255, 0.05)', 
+                        border: '1px solid rgba(10, 132, 255, 0.1)',
+                        padding: '24px'
+                    }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-                            <h3 className="card-title" style={{ fontSize: 18, color: '#86868b', margin: 0 }}>Doanh Thu Hàng Tháng</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0A84FF', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                    <LineChartOutlined />
+                                </div>
+                                <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Doanh Thu Hàng Tháng</div>
+                            </div>
                             {barChartData.length >= 2 && (
                                 <div style={{ 
                                     display: 'flex', 
@@ -209,6 +266,8 @@ export default function DashboardClient({
                                             fillOpacity={1} 
                                             fill="url(#colorRev)" 
                                             animationDuration={1500}
+                                            dot={{ r: 4, fill: '#0A84FF', strokeWidth: 2, stroke: '#fff' }}
+                                            activeDot={{ r: 6, strokeWidth: 0 }}
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
@@ -250,50 +309,57 @@ export default function DashboardClient({
                     </div>
                 </div>
 
-                {/* ══════ SECTION 3: TỒN KHO ══════ */}
+                {/* ══════ SECTION 3: INVENTORY CARDS ══════ */}
                 <div className="grid-2 section-gap">
                     {/* Tổng Vốn Tồn Kho */}
-                    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '32px' }}>
-                        <div style={{ fontSize: 16, color: '#86868b', fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            TỔNG VỐN ĐANG TỒN KHO
+                    <div className="glass-card" style={{ 
+                        background: 'rgba(255, 45, 85, 0.05)', 
+                        border: '1px solid rgba(255, 45, 85, 0.1)',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        justifyContent: 'center',
+                        minHeight: '140px',
+                        padding: '24px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FF2D55', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                <InboxOutlined />
+                            </div>
+                            <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tổng Vốn Tồn Kho</div>
                         </div>
-                        <div style={{ fontSize: 40, fontWeight: 700, color: '#1d1d1f', letterSpacing: '-1px' }}>
-                            {fmtFull(inStockCapital)}
-                        </div>
-                        <div style={{ fontSize: 14, color: '#0A84FF', marginTop: 12, fontWeight: 500, background: 'rgba(10,132,255,0.1)', padding: '6px 12px', borderRadius: 20 }}>
-                            Đang có {inStockCount} máy chờ bán
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#FF2D55', letterSpacing: '-1px' }}>{fmtFull(inStockCapital)}</div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#86868b' }}>
+                            Số lượng: <span style={{ fontWeight: 600 }}>{inStockCount} máy chờ bán</span>
                         </div>
                     </div>
 
-                    {/* Slow Stock */}
-                    <div className="glass-card">
-                        <h3 className="card-title" style={{ color: '#FF3B30', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            MÁY TỒN KHO LÂU NGÀY
-                        </h3>
+                    {/* Slow Stock Card */}
+                    <div className="glass-card" style={{ 
+                        background: 'rgba(255, 59, 48, 0.05)', 
+                        border: '1px solid rgba(255, 59, 48, 0.1)',
+                        padding: '24px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FF3B30', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                                <WarningOutlined />
+                            </div>
+                            <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Máy Tồn Kho Lâu Ngày ({'>'}30 ngày)</div>
+                        </div>
+                        
                         {slowMoving.length === 0 ? (
-                            <div style={{ color: '#86868b', fontSize: 14, padding: '24px 0' }}></div>
+                            <div style={{ color: '#86868b', fontSize: 14, padding: '10px 0' }}>Không có máy tồn lâu</div>
                         ) : (
-                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', textAlign: 'left', color: '#86868b', fontSize: 12 }}>
-                                        <th style={{ paddingBottom: 8, fontWeight: 500 }}>Sản Phẩm</th>
-                                        <th style={{ paddingBottom: 8, fontWeight: 500, textAlign: 'right' }}>Thời Gian</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {slowMoving.map((m, i) => (
-                                        <tr key={m.id} style={{ borderBottom: i === slowMoving.length - 1 ? 'none' : '1px solid rgba(0,0,0,0.04)' }}>
-                                            <td style={{ padding: '12px 0', fontSize: 14, fontWeight: 500, color: '#1d1d1f' }}>
-                                                {getFullName(m.models)}
-                                                {m.serial && <div style={{ fontSize: 12, color: '#86868b', fontWeight: 400, marginTop: 4 }}>SN: {m.serial}</div>}
-                                            </td>
-                                            <td style={{ padding: '12px 0', textAlign: 'right' }}>
-                                                <Tag color="volcano" style={{ borderRadius: 12, margin: 0, padding: '2px 8px', fontWeight: 600 }}>{m.daysInStock} ngày</Tag>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                {slowMoving.map((m) => (
+                                    <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+                                        <div>
+                                            <div style={{ fontSize: 14, fontWeight: 600, color: '#1d1d1f' }}>{getFullName(m.models)}</div>
+                                            {m.serial && <div style={{ fontSize: 12, color: '#86868b' }}>SN: {m.serial}</div>}
+                                        </div>
+                                        <Tag color="volcano" style={{ borderRadius: 12, margin: 0, fontWeight: 600 }}>{m.daysInStock} ngày</Tag>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
