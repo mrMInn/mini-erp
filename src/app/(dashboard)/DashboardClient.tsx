@@ -6,8 +6,9 @@ import { PROFIT_RATIO, PARTNER_NAMES } from '@/constants';
 import dayjs from 'dayjs';
 import { getFullName } from '@/utils/helpers';
 import {
-    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
+    AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
+import { RiseOutlined, FallOutlined, SearchOutlined } from '@ant-design/icons';
 import './dashboard.css';
 
 const COLORS = ['#FF9500', '#5E5CE6']; 
@@ -93,6 +94,11 @@ export default function DashboardClient({
     });
     const barChartData = sortedMonths.map(month => ({ month, revenue: monthlyMap.get(month)! }));
 
+    // Growth calculation for Option 1
+    const lastMonthRev = barChartData.length >= 2 ? barChartData[barChartData.length - 2].revenue : 0;
+    const currentMonthRev = barChartData.length >= 1 ? barChartData[barChartData.length - 1].revenue : 0;
+    const growthPercent = lastMonthRev > 0 ? ((currentMonthRev - lastMonthRev) / lastMonthRev) * 100 : 0;
+
     const hasPieData = periodSD > 0 || periodKM > 0;
     const pieData = [
         { name: PARTNER_NAMES.SD, value: Math.max(0, periodSD) },
@@ -151,23 +157,62 @@ export default function DashboardClient({
                 {/* ══════ SECTION 2: CHART + PROFIT SPLIT ══════ */}
                 <div className="grid-2 section-gap">
 
-                    {/* Bar Chart */}
-                    <div className="glass-card" ref={chartRef}>
-                        <h3 className="card-title" style={{ fontSize: 18, marginBottom: 24, color: '#86868b' }}>Doanh Thu Hàng Tháng</h3>
+                    {/* Area Chart (Option 1) */}
+                    <div className="glass-card" ref={chartRef} style={{ position: 'relative' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                            <h3 className="card-title" style={{ fontSize: 18, color: '#86868b', margin: 0 }}>Doanh Thu Hàng Tháng</h3>
+                            {barChartData.length >= 2 && (
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: 4, 
+                                    padding: '4px 10px', 
+                                    borderRadius: '12px',
+                                    background: growthPercent >= 0 ? 'rgba(52, 199, 89, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+                                    color: growthPercent >= 0 ? '#34C759' : '#FF3B30',
+                                    fontSize: 13,
+                                    fontWeight: 600
+                                }}>
+                                    {growthPercent >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                    {Math.abs(growthPercent).toFixed(1)}%
+                                </div>
+                            )}
+                        </div>
+                        
                         {barChartData.length === 0 ? (
                             <div style={{ color: '#86868b', fontSize: 14, padding: '40px 0', textAlign: 'center' }}>
                                 Không có dữ liệu
                             </div>
                         ) : (
-                            <BarChart width={Math.max(chartWidth - 56, 200)} height={200} data={barChartData}
-                                margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#86868b' }} />
-                                <YAxis axisLine={false} tickLine={false} tickFormatter={fmtMoney} tick={{ fontSize: 11, fill: '#86868b' }} width={55} />
-                                <Tooltip formatter={(value: any) => [fmtFull(value), 'Doanh thu']}
-                                    contentStyle={{ background: 'rgba(255,255,255,0.9)', border: '1px solid #e5e5ea', borderRadius: 12, fontSize: 13 }}
-                                    cursor={{ fill: 'rgba(0,0,0,0.03)' }} />
-                                <Bar dataKey="revenue" fill="#0A84FF" radius={[6, 6, 0, 0]} barSize={barChartData.length <= 3 ? 50 : undefined} />
-                            </BarChart>
+                            <div style={{ width: '100%', height: 220 }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#0A84FF" stopOpacity={0.3}/>
+                                                <stop offset="95%" stopColor="#0A84FF" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#86868b' }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tickFormatter={fmtMoney} tick={{ fontSize: 11, fill: '#86868b' }} />
+                                        <Tooltip 
+                                            formatter={(value: any) => [fmtFull(value), 'Doanh thu']}
+                                            contentStyle={{ background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 13 }}
+                                            labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                                        />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="revenue" 
+                                            stroke="#0A84FF" 
+                                            strokeWidth={3}
+                                            fillOpacity={1} 
+                                            fill="url(#colorRev)" 
+                                            animationDuration={1500}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
                         )}
                     </div>
 
