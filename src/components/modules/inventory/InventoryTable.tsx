@@ -441,12 +441,13 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
 
       {/* SEARCH */}
       <div className="inv-search">
-        <Search
-          placeholder="🔍 Tìm theo tên, cấu hình, serial..."
+        <Input
+          placeholder="Tìm theo tên, cấu hình, serial..."
           allowClear
           onChange={(e) => setSearchText(e.target.value)}
           size="large"
-          enterButton={false}
+          prefix={<SearchOutlined style={{ color: '#86868b' }} />}
+          className="inv-search-input"
         />
       </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, Tag, Typography, Input, Space, Button, Modal, InputNumber, message, Popconfirm, Row, Col, Descriptions, Divider } from 'antd';
-import { EyeOutlined, RollbackOutlined, PrinterOutlined, HistoryOutlined } from '@ant-design/icons';
+import { EyeOutlined, RollbackOutlined, PrinterOutlined, HistoryOutlined, SearchOutlined } from '@ant-design/icons';
 import { refundOrderItemAction } from '@/actions/orders.actions';
 import { getFullName, formatCurrency } from '@/utils/helpers';
 import { createClient } from '@/lib/supabase/client';
@@ -309,13 +309,13 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
         <div className="orders-page">
             <div className="orders-header">
                 <h2 className="orders-title">📋 Lịch Sử Đơn Hàng</h2>
-                <Search
+                <Input
                     className="orders-search"
-                    placeholder="🔍 Tìm theo tên khách, SĐT, serial..."
+                    placeholder="Tìm theo tên khách, SĐT, serial..."
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
                     size="large"
-                    enterButton={false}
+                    prefix={<SearchOutlined style={{ color: '#86868b' }} />}
                 />
             </div>
 

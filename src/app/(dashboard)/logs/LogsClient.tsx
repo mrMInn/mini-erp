@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, Tag, Typography, Input, Space } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import './logs.css';
 
@@ -78,13 +79,13 @@ export default function LogsClient({ logsData }: { logsData: any[] }) {
         <div className="logs-page">
             <div className="logs-header">
                 <h2 className="logs-title">⚙️ Nhật Ký Hệ Thống</h2>
-                <Search
+                <Input
                     className="logs-search"
-                    placeholder="🔍 Tìm theo nhân viên hoặc nội dung..."
+                    placeholder="Tìm theo nhân viên hoặc nội dung..."
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
                     size="large"
-                    enterButton={false}
+                    prefix={<SearchOutlined style={{ color: '#86868b' }} />}
                 />
             </div>
 
