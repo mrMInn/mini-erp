@@ -8,7 +8,7 @@ import { getFullName } from '@/utils/helpers';
 import {
     AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
-import { RiseOutlined, FallOutlined, SearchOutlined, DollarOutlined, TransactionOutlined, StockOutlined, InboxOutlined, WarningOutlined, LineChartOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import './dashboard.css';
 
 const COLORS = ['#FF9500', '#5E5CE6']; 
@@ -145,9 +145,6 @@ export default function DashboardClient({
                         padding: '24px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#007AFF', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                <TransactionOutlined />
-                            </div>
                             <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vốn Tích Lũy</div>
                         </div>
                         <div style={{ fontSize: 32, fontWeight: 700, color: '#007AFF', letterSpacing: '-1px' }}>{fmtFull(sdAccumulatedCapital)}</div>
@@ -167,9 +164,6 @@ export default function DashboardClient({
                         padding: '24px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#34C759', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                <StockOutlined />
-                            </div>
                             <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lợi Nhuận Gộp</div>
                         </div>
                         <div style={{ fontSize: 32, fontWeight: 700, color: '#34C759', letterSpacing: '-1px' }}>{fmtFull(periodGrossProfit)}</div>
@@ -189,9 +183,6 @@ export default function DashboardClient({
                         padding: '24px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#5E5CE6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                <DollarOutlined />
-                            </div>
                             <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lợi Nhuận Ròng</div>
                         </div>
                         <div style={{ fontSize: 32, fontWeight: 700, color: '#5E5CE6', letterSpacing: '-1px' }}>{fmtFull(periodNetProfit)}</div>
@@ -213,9 +204,6 @@ export default function DashboardClient({
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0A84FF', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                    <LineChartOutlined />
-                                </div>
                                 <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Doanh Thu Hàng Tháng</div>
                             </div>
                             {barChartData.length >= 2 && (
@@ -230,7 +218,7 @@ export default function DashboardClient({
                                     fontSize: 13,
                                     fontWeight: 600
                                 }}>
-                                    {growthPercent >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                    {growthPercent >= 0 ? '↑' : '↓'}
                                     {Math.abs(growthPercent).toFixed(1)}%
                                 </div>
                             )}
@@ -322,9 +310,6 @@ export default function DashboardClient({
                         padding: '24px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FF2D55', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                <InboxOutlined />
-                            </div>
                             <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tổng Vốn Tồn Kho</div>
                         </div>
                         <div style={{ fontSize: 32, fontWeight: 700, color: '#FF2D55', letterSpacing: '-1px' }}>{fmtFull(inStockCapital)}</div>
@@ -340,9 +325,6 @@ export default function DashboardClient({
                         padding: '24px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FF3B30', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                                <WarningOutlined />
-                            </div>
                             <div style={{ fontSize: 13, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Máy Tồn Kho Lâu Ngày ({'>'}30 ngày)</div>
                         </div>
                         

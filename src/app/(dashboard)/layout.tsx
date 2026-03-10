@@ -20,13 +20,13 @@ import { createClient } from '@/lib/supabase/client';
 import './sidebar.css';
 
 const menuItems = [
-  { key: '/', icon: <AppstoreOutlined />, label: 'Tổng Quan' },
-  { key: '/inventory', icon: <LaptopOutlined />, label: 'Kho Hàng' },
-  { key: '/pos', icon: <ShoppingCartOutlined />, label: 'Bán Hàng' },
-  { key: '/orders', icon: <HistoryOutlined />, label: 'Đơn Hàng' },
-  { key: '/accounting', icon: <DollarOutlined />, label: 'Kế Toán' },
-  { key: '/logs', icon: <ProfileOutlined />, label: 'Nhật Ký' },
-  { key: '/warranty', icon: <ToolOutlined />, label: 'Bảo Hành' },
+  { key: '/', label: 'Tổng Quan' },
+  { key: '/inventory', label: 'Kho Hàng' },
+  { key: '/pos', label: 'Bán Hàng' },
+  { key: '/orders', label: 'Đơn Hàng' },
+  { key: '/accounting', label: 'Kế Toán' },
+  { key: '/logs', label: 'Nhật Ký' },
+  { key: '/warranty', label: 'Bảo Hành' },
 ];
 
 export default function DashboardLayout({
@@ -36,6 +36,7 @@ export default function DashboardLayout({
 }) {
   const [userEmail, setUserEmail] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
 
@@ -54,7 +55,10 @@ export default function DashboardLayout({
     await logoutAction();
   };
 
+  const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
+
   const userInitial = userEmail ? userEmail.charAt(0).toUpperCase() : '?';
+  const userName = userEmail.split('@')[0] || 'User';
 
   return (
     <div className={`app-layout ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
@@ -78,7 +82,6 @@ export default function DashboardLayout({
             <div className="sidebar-logo-icon">KM</div>
             <span className="sidebar-logo-text">Digital</span>
           </div>
-
           <div className="sidebar-nav">
             {menuItems.map((item) => (
               <Link
@@ -86,30 +89,34 @@ export default function DashboardLayout({
                 key={item.key}
                 className={`nav-item ${pathname === item.key ? 'active' : ''}`}
               >
-                <span className="nav-item-icon">{item.icon}</span>
                 <span className="nav-item-label">{item.label}</span>
               </Link>
             ))}
           </div>
 
-          <div className="sidebar-user">
-            <div className="user-info">
-              <div className="user-avatar">{userInitial}</div>
-              <div className="user-meta">
-                <div className="user-name">{userEmail.split('@')[0] || 'User'}</div>
-                <div className="user-email">{userEmail}</div>
+          {/* Sidebar Footer User Section (Horizontal Reveal) */}
+          <div className={`sidebar-user-footer-compact ${isUserMenuOpen ? 'active' : ''}`} onClick={toggleUserMenu}>
+            <div className="user-controls-row">
+              <div className="user-avatar-blue-trigger">
+                {userInitial}
               </div>
+              
+              {isUserMenuOpen && (
+                <button className="logout-circular-reveal-btn" onClick={(e) => { e.stopPropagation(); handleLogout(); }} title="Đăng xuất">
+                  <LogoutOutlined />
+                </button>
+              )}
             </div>
-
-            <button className="logout-btn" onClick={handleLogout}>
-              <LogoutOutlined />
-              <span className="nav-item-label">Đăng xuất</span>
-            </button>
+            <div className="user-email-bottom">{userEmail}</div>
           </div>
         </nav>
       </div>
 
-      <main className="main-content">{children}</main>
+      <main className="main-content">
+        <div className="page-container">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
