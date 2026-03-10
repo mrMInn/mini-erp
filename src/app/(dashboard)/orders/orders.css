@@ -7,6 +7,12 @@
     color: #1d1d1f;
 }
 
+@media (max-width: 640px) {
+    .orders-page {
+        padding: 16px;
+    }
+}
+
 .orders-header {
     display: flex;
     justify-content: space-between;
@@ -22,6 +28,12 @@
     letter-spacing: -0.5px;
     color: #1d1d1f;
     margin: 0;
+}
+
+@media (max-width: 640px) {
+    .orders-title {
+        font-size: 20px;
+    }
 }
 
 .orders-search .ant-input-affix-wrapper {
@@ -53,6 +65,13 @@
     border-radius: 20px;
     padding: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 640px) {
+    .orders-table-container {
+        border-radius: 12px;
+        padding: 0;
+    }
 }
 
 .orders-table-container .ant-table {

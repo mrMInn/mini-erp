@@ -526,17 +526,17 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
                 <Button size="small" type="link" danger onClick={() => setIsCreatingModel(false)}>Hủy</Button>
               </div>
               <Row gutter={12}>
-                <Col span={12}><Form.Item name="new_brand" label="Hãng" rules={[{ required: true, message: 'Nhập hãng' }]} style={{ marginBottom: 8 }}><Input placeholder="Dell, Apple..." /></Form.Item></Col>
-                <Col span={12}><Form.Item name="new_name" label="Tên Máy" rules={[{ required: true, message: 'Nhập tên' }]} style={{ marginBottom: 8 }}><Input placeholder="XPS 15, MacBook Pro..." /></Form.Item></Col>
+                <Col xs={24} sm={12}><Form.Item name="new_brand" label="Hãng" rules={[{ required: true, message: 'Nhập hãng' }]} style={{ marginBottom: 8 }}><Input placeholder="Dell, Apple..." /></Form.Item></Col>
+                <Col xs={24} sm={12}><Form.Item name="new_name" label="Tên Máy" rules={[{ required: true, message: 'Nhập tên' }]} style={{ marginBottom: 8 }}><Input placeholder="XPS 15, MacBook Pro..." /></Form.Item></Col>
               </Row>
               <Divider style={{ margin: '8px 0', borderColor: '#d6e4ff' }} />
               <Row gutter={12}>
-                <Col span={8}><Form.Item name="new_cpu" label="CPU" style={{ marginBottom: 8 }}><Input placeholder="i7 12th" /></Form.Item></Col>
-                <Col span={8}><Form.Item name="new_ram" label="RAM" style={{ marginBottom: 8 }}><Input placeholder="16GB" /></Form.Item></Col>
-                <Col span={8}><Form.Item name="new_storage" label="SSD" style={{ marginBottom: 8 }}><Input placeholder="512GB" /></Form.Item></Col>
-                <Col span={8}><Form.Item name="new_battery" label="Pin" style={{ marginBottom: 8 }}><Input placeholder="100%" /></Form.Item></Col>
-                <Col span={8}><Form.Item name="new_mdm" label="MDM?" valuePropName="checked" style={{ marginBottom: 8 }}><Switch checkedChildren="Có" unCheckedChildren="Không" /></Form.Item></Col>
-                <Col span={8} style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8 }}>
+                <Col xs={12} sm={8}><Form.Item name="new_cpu" label="CPU" style={{ marginBottom: 8 }}><Input placeholder="i7 12th" /></Form.Item></Col>
+                <Col xs={12} sm={8}><Form.Item name="new_ram" label="RAM" style={{ marginBottom: 8 }}><Input placeholder="16GB" /></Form.Item></Col>
+                <Col xs={12} sm={8}><Form.Item name="new_storage" label="SSD" style={{ marginBottom: 8 }}><Input placeholder="512GB" /></Form.Item></Col>
+                <Col xs={12} sm={8}><Form.Item name="new_battery" label="Pin" style={{ marginBottom: 8 }}><Input placeholder="100%" /></Form.Item></Col>
+                <Col xs={12} sm={8}><Form.Item name="new_mdm" label="MDM?" valuePropName="checked" style={{ marginBottom: 8 }}><Switch checkedChildren="Có" unCheckedChildren="Không" /></Form.Item></Col>
+                <Col xs={24} sm={8} style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8 }}>
                   <Button type="primary" onClick={handleCreateModelInline} loading={isSubmitting}
                     style={{ width: '100%', borderRadius: 8, background: '#0A84FF', fontWeight: 600 }}
                   >Lưu Model</Button>
@@ -554,14 +554,14 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
             {Array.from({ length: importQuantity }).map((_, i) => (
               <Row gutter={10} key={i} style={{ marginBottom: 8, padding: '12px 8px', background: '#f1f5f9', borderRadius: 10, border: '1px dashed #cbd5e1' }}>
                 <Col span={1} style={{ display: 'flex', alignItems: 'center' }}><Text strong style={{ color: '#64748b' }}>{i + 1}.</Text></Col>
-                <Col span={10} style={{ display: 'flex', gap: 8 }}>
-                  <Form.Item name={`serial_${i}`} style={{ margin: 0, flex: 1 }}><Input placeholder="Serial (để trống nếu chưa có)" /></Form.Item>
-                  <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { handleScanSerial(file, i, importForm); return false; }}>
-                    <Button type="primary" ghost icon={<CameraOutlined />} loading={scanningIndex === i} />
-                  </Upload>
-                </Col>
-                <Col span={7}><Form.Item name={`price_${i}`} rules={[{ required: true }]} style={{ margin: 0 }}><InputNumber style={{ width: '100%' }} formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} placeholder="Giá nhập" /></Form.Item></Col>
-                <Col span={6}><Form.Item name={`additional_cost_${i}`} style={{ margin: 0 }}><InputNumber style={{ width: '100%' }} formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} placeholder="Phí ship/sạc" /></Form.Item></Col>
+              <Col xs={24} md={12} style={{ display: 'flex', gap: 8 }}>
+                <Form.Item name={`serial_${i}`} style={{ margin: 0, flex: 1 }}><Input placeholder="Serial (để trống nếu chưa có)" /></Form.Item>
+                <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { handleScanSerial(file, i, importForm); return false; }}>
+                  <Button type="primary" ghost icon={<CameraOutlined />} loading={scanningIndex === i} />
+                </Upload>
+              </Col>
+              <Col xs={12} md={6}><Form.Item name={`price_${i}`} rules={[{ required: true }]} style={{ margin: 0 }}><InputNumber style={{ width: '100%' }} formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} placeholder="Giá nhập" /></Form.Item></Col>
+              <Col xs={12} md={6}><Form.Item name={`additional_cost_${i}`} style={{ margin: 0 }}><InputNumber style={{ width: '100%' }} formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} placeholder="Phí ship/sạc" /></Form.Item></Col>
               </Row>
             ))}
           </div>

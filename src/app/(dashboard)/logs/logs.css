@@ -8,6 +8,12 @@
     color: #1d1d1f;
 }
 
+@media (max-width: 640px) {
+    .logs-page {
+        padding: 16px;
+    }
+}
+
 .logs-header {
     display: flex;
     justify-content: space-between;
@@ -23,6 +29,12 @@
     letter-spacing: -0.5px;
     color: #1d1d1f;
     margin: 0;
+}
+
+@media (max-width: 640px) {
+    .logs-title {
+        font-size: 20px;
+    }
 }
 
 .logs-search .ant-input-affix-wrapper {
@@ -54,6 +66,13 @@
     border-radius: 20px;
     padding: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 640px) {
+    .logs-table-container {
+        border-radius: 12px;
+        padding: 0;
+    }
 }
 
 .logs-table-container .ant-table {

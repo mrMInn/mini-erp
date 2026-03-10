@@ -10,6 +10,8 @@ import {
   LogoutOutlined,
   HistoryOutlined,
   ProfileOutlined,
+  MenuOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -33,6 +35,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [userEmail, setUserEmail] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
 
@@ -42,6 +45,11 @@ export default function DashboardLayout({
     });
   }, [supabase]);
 
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const handleLogout = async () => {
     await logoutAction();
   };
@@ -49,7 +57,21 @@ export default function DashboardLayout({
   const userInitial = userEmail ? userEmail.charAt(0).toUpperCase() : '?';
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+      {/* Mobile Top Header */}
+      <header className="mobile-header">
+        <div className="mobile-logo">
+          <div className="sidebar-logo-icon">KM</div>
+          <span className="sidebar-logo-text">Digital</span>
+        </div>
+        <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
+        </button>
+      </header>
+
+      {/* Sidebar Overlay */}
+      <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)} />
+
       <div className="sidebar-wrap">
         <nav className="sidebar">
           <div className="sidebar-logo">

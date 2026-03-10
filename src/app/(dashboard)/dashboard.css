@@ -9,6 +9,12 @@
   padding: 32px;
 }
 
+@media (max-width: 640px) {
+  .dashboard {
+    padding: 16px;
+  }
+}
+
 /* Content wrapper */
 .dashboard-content {
   position: relative;
@@ -55,6 +61,12 @@
   padding: 28px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (max-width: 640px) {
+  .glass-card {
+    padding: 16px;
+  }
 }
 
 .glass-card:hover {
@@ -136,12 +148,23 @@
   margin-bottom: 20px;
 }
 
-/* ═══════════ RECHARTS ═══════════ */
-.recharts-text {
-  fill: #86868b !important;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px !important;
+/* ═══════════ MOBILE REFINEMENTS ═══════════ */
+@media (max-width: 640px) {
+  .metric-value {
+    font-size: 24px !important;
+  }
+  
+  .metric-item {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 16px;
+  }
+  
+  .metric-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 }
 
 /* ═══════════ FILTER PILLS (Shared from Inventory) ═══════════ */
