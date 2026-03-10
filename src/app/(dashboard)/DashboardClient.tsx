@@ -6,8 +6,7 @@ import { PROFIT_RATIO, PARTNER_NAMES } from '@/constants';
 import dayjs from 'dayjs';
 import { getFullName } from '@/utils/helpers';
 import {
-    BarChart, Bar, XAxis, YAxis, Tooltip,
-    PieChart, Pie, Cell,
+    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
 import './dashboard.css';
 
@@ -172,38 +171,36 @@ export default function DashboardClient({
                         )}
                     </div>
 
-                    {/* Profit Split */}
-                    <div className="glass-card">
-                        <h3 className="card-title" style={{ fontSize: 18, marginBottom: 24, color: '#86868b' }}>Phân Bổ Lợi Nhuận</h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 40, flexWrap: 'wrap', padding: '16px 0' }}>
-                            <PieChart width={140} height={140}>
-                                {hasPieData ? (
-                                    <Pie data={pieData} cx={70} cy={70} innerRadius={45} outerRadius={65} paddingAngle={4} dataKey="value" stroke="none">
-                                        {pieData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-                                    </Pie>
-                                ) : (
-                                    <Pie data={[{ value: 1 }]} cx={70} cy={70} innerRadius={45} outerRadius={65} dataKey="value" stroke="none">
-                                        <Cell fill="#e5e5ea" />
-                                    </Pie>
-                                )}
-                            </PieChart>
-
-                            <div style={{ flex: 1, minWidth: 140 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: COLORS[0], color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, flexShrink: 0, boxShadow: '0 4px 12px rgba(10,132,255,0.3)' }}>SĐ</div>
-                                    <div>
-                                        <div style={{ fontSize: 13, color: '#86868b', fontWeight: 500 }}>{PARTNER_NAMES.SD}</div>
-                                        <div style={{ fontSize: 24, fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.5px' }}>{fmtFull(periodSD)}</div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: COLORS[1], color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, flexShrink: 0, boxShadow: '0 4px 12px rgba(94,92,230,0.3)' }}>KM</div>
-                                    <div>
-                                        <div style={{ fontSize: 13, color: '#86868b', fontWeight: 500 }}>{PARTNER_NAMES.KM}</div>
-                                        <div style={{ fontSize: 24, fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.5px' }}>{fmtFull(periodKM)}</div>
-                                    </div>
-                                </div>
+                    {/* Profit Split - Replaced with Cards */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+                        <div className="glass-card" style={{ 
+                            background: 'rgba(255, 149, 0, 0.1)', 
+                            border: '1px solid rgba(255, 149, 0, 0.2)',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'center',
+                            minHeight: '140px' 
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FF9500', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12 }}>SĐ</div>
+                                <div style={{ fontSize: 14, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{PARTNER_NAMES.SD}</div>
                             </div>
+                            <div style={{ fontSize: 32, fontWeight: 700, color: '#FF9500', letterSpacing: '-1px' }}>{fmtFull(periodSD)}</div>
+                        </div>
+
+                        <div className="glass-card" style={{ 
+                            background: 'rgba(94, 92, 230, 0.1)', 
+                            border: '1px solid rgba(94, 92, 230, 0.2)',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'center',
+                            minHeight: '140px' 
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#5E5CE6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12 }}>KM</div>
+                                <div style={{ fontSize: 14, color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{PARTNER_NAMES.KM}</div>
+                            </div>
+                            <div style={{ fontSize: 32, fontWeight: 700, color: '#5E5CE6', letterSpacing: '-1px' }}>{fmtFull(periodKM)}</div>
                         </div>
                     </div>
                 </div>
