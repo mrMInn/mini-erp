@@ -95,14 +95,18 @@ export async function updateInventoryAction(id: string, updateData: any, actor: 
 
     await InventoryRepo.updateInventory(id, finalData);
 
+    // Fetch full details for the Telegram message
+    const item = await InventoryRepo.getInventoryItemWithModel(id);
+    const machineName = `${item.models?.brand} ${item.models?.name}`.trim();
+
     // 📢 BÁO CÁO TELEGRAM KHI SỬA HOẶC BÁN
     let actionText = "Cập nhật thông tin";
     let logAction = 'UPDATE';
     if (finalData.status === 'sold') { actionText = "💰 Đã Bán / Xuất Hủy"; logAction = 'SELL'; }
     if (finalData.status === 'defective') { actionText = "🛠️ Báo Lỗi"; logAction = 'UPDATE'; }
 
-    await logAudit(actor, logAction, 'inventory', id, `${actionText} máy Serial/ID: ${finalData.serial || id}`);
-    sendTelegramMessage(`🔄 <b>[${actionText}]</b>\nSerial/ID: <code>${finalData.serial || id}</code>\n👤 Người thao tác: <b>${actor}</b>\nGiá vốn cập nhật: ${finalData.purchase_price?.toLocaleString() || 0} đ`);
+    await logAudit(actor, logAction, 'inventory', id, `${actionText} máy ${machineName} (Serial: ${item.serial || 'N/A'})`);
+    sendTelegramMessage(`🔄 <b>[${actionText}]</b>\n💻 Máy: <b>${machineName}</b>\n🆔 Serial: <code>${item.serial || 'N/A'}</code>\n👤 Người thao tác: <b>${actor}</b>\n💰 Giá vốn hiện tại: <b>${item.purchase_price?.toLocaleString() || 0} đ</b>`);
 
     revalidatePath('/inventory');
     return { success: true };
@@ -115,15 +119,20 @@ export async function deleteInventoryAction(id: string, actor: string) {
     if (!id) throw new Error('Thiếu ID máy!');
     if (!actor) throw new Error('Không xác định được người thao tác!');
 
+    // Fetch details before deletion
+    const item = await InventoryRepo.getInventoryItemWithModel(id);
+    const machineName = `${item.models?.brand} ${item.models?.name}`.trim();
+    const machineSerial = item.serial || 'N/A';
+
     const result = await InventoryRepo.deleteOrArchiveInventory(id);
 
     if (result === 'deleted') {
-      await logAudit(actor, 'DELETE', 'inventory', id, `Xóa vĩnh viễn máy chưa bán (ID: ${id})`);
-      await sendTelegramMessage(`🚨 <b>[XÓA VĨNH VIỄN]</b>\n👤 <b>${actor}</b> vừa Phi tang 1 máy chưa bán!\nID: <code>${id}</code>`).catch(console.error);
+      await logAudit(actor, 'DELETE', 'inventory', id, `Xóa vĩnh viễn máy ${machineName} (Serial: ${machineSerial})`);
+      await sendTelegramMessage(`🚨 <b>[XÓA VĨNH VIỄN]</b>\n💻 Máy: <b>${machineName}</b>\n🆔 Serial: <code>${machineSerial}</code>\n👤 Thủ phạm: <b>${actor}</b> vừa Phi tang 1 máy chưa bán!\n(ID hệ thống: <code>${id}</code>)`).catch(console.error);
       return { success: true, message: 'Máy chưa bán. Đã xóa vĩnh viễn khỏi kho!' };
     } else {
-      await logAudit(actor, 'DELETE', 'inventory', id, `Chuyển máy đã bán vào Thùng rác/Lưu trữ (ID: ${id})`);
-      await sendTelegramMessage(`🚨 <b>[LƯU TRỮ VÀO THÙNG RÁC]</b>\n👤 <b>${actor}</b> vừa Lưu Trữ máy đã bán có ID:\n<code>${id}</code>`).catch(console.error);
+      await logAudit(actor, 'DELETE', 'inventory', id, `Chuyển máy đã bán ${machineName} (Serial: ${machineSerial}) vào Thùng rác/Lưu trữ`);
+      await sendTelegramMessage(`🚨 <b>[LƯU TRỮ VÀO THÙNG RÁC]</b>\n💻 Máy: <b>${machineName}</b>\n🆔 Serial: <code>${machineSerial}</code>\n👤 <b>${actor}</b> vừa Lưu Trữ máy đã bán.\n(ID hệ thống: <code>${id}</code>)`).catch(console.error);
       return { success: true, message: 'Máy đã có bill kế toán. Đã tống vào Thùng rác (Lưu Trữ)!' };
     }
   } catch (error: any) {

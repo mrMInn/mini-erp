@@ -50,7 +50,6 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
   const [searchText, setSearchText] = useState('');
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('in_stock');
 
-  const [isModelModalOpen, setIsModelModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [importQuantity, setImportQuantity] = useState(1);
@@ -58,8 +57,9 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
   const [editingRecord, setEditingRecord] = useState<any>(null);
   const [scanningIndex, setScanningIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingModel, setIsCreatingModel] = useState(false);
+  const [localModels, setLocalModels] = useState<any[]>(modelsData);
 
-  const [modelForm] = Form.useForm();
   const [importForm] = Form.useForm();
   const [editForm] = Form.useForm();
 
@@ -73,6 +73,10 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
   React.useEffect(() => {
     setLocalInventory(inventoryData.filter((item: any) => item.is_deleted !== true));
   }, [inventoryData]);
+
+  React.useEffect(() => {
+    setLocalModels(modelsData);
+  }, [modelsData]);
 
   React.useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -101,11 +105,30 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
     }
   };
 
-  const handleCreateModel = async (values: any) => {
+  const handleCreateModelInline = async () => {
+    const brand = importForm.getFieldValue('new_brand');
+    const name = importForm.getFieldValue('new_name');
+    if (!brand || !brand.trim()) { message.error('Chưa nhập Hãng!'); return; }
+    if (!name || !name.trim()) { message.error('Chưa nhập Tên Máy!'); return; }
     setIsSubmitting(true);
+    const values = {
+      brand, name,
+      cpu: importForm.getFieldValue('new_cpu') || '',
+      ram: importForm.getFieldValue('new_ram') || '',
+      storage: importForm.getFieldValue('new_storage') || '',
+      battery: importForm.getFieldValue('new_battery') || '',
+      mdm: importForm.getFieldValue('new_mdm') || false,
+      actor_email: currentUser,
+    };
     const res = await createModelAction(values);
-    if (res.success) { message.success(res.message); setIsModelModalOpen(false); modelForm.resetFields(); router.refresh(); }
-    else message.error(res.message);
+    if (res.success) {
+      message.success('Đã tạo model! Đang tải lại...');
+      setIsCreatingModel(false);
+      // Clear inline fields
+      importForm.setFieldsValue({ new_brand: undefined, new_name: undefined, new_cpu: undefined, new_ram: undefined, new_storage: undefined, new_battery: undefined, new_mdm: false });
+      // Refresh to get the new model list with the new ID
+      router.refresh();
+    } else { message.error(res.message); }
     setIsSubmitting(false);
   };
 
@@ -403,29 +426,17 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
       {/* HEADER */}
       <div className="inv-header">
         <h2 className="inv-title">📦 Kho Hàng</h2>
-        <Space size={10}>
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => setIsModelModalOpen(true)}
-            style={{
-              background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.8)', borderRadius: 12, fontWeight: 600, color: '#1d1d1f', height: 40, padding: '0 20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            }}
-          >
-            Thêm Model
-          </Button>
-          <Button
-            type="primary"
-            icon={<RocketOutlined />}
-            onClick={() => setIsImportModalOpen(true)}
-            style={{
-              background: 'linear-gradient(135deg, #0A84FF, #0070E0)', border: 'none', borderRadius: 12, fontWeight: 600, height: 40, padding: '0 20px',
-              boxShadow: '0 2px 12px rgba(10,132,255,0.3)',
-            }}
-          >
-            Nhập Kho
-          </Button>
-        </Space>
+        <Button
+          type="primary"
+          icon={<RocketOutlined />}
+          onClick={() => { setIsCreatingModel(false); setIsImportModalOpen(true); }}
+          style={{
+            background: 'linear-gradient(135deg, #0A84FF, #0070E0)', border: 'none', borderRadius: 12, fontWeight: 600, height: 40, padding: '0 20px',
+            boxShadow: '0 2px 12px rgba(10,132,255,0.3)',
+          }}
+        >
+          Nhập Kho
+        </Button>
       </div>
 
       {/* SEARCH */}
@@ -473,32 +484,32 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
 
       {/* ═══════════ MODALS ═══════════ */}
 
-      {/* Modal: Tạo Model */}
-      <Modal title="Tạo Dòng Máy (Model) Mới" open={isModelModalOpen} confirmLoading={isSubmitting} onCancel={() => setIsModelModalOpen(false)} onOk={() => modelForm.submit()} okText="Lưu">
-        <Form form={modelForm} layout="vertical" onFinish={handleCreateModel}>
-          <Row gutter={16}>
-            <Col span={12}><Form.Item name="brand" label="Hãng" rules={[{ required: true }]}><Input placeholder="Dell, Apple..." /></Form.Item></Col>
-            <Col span={12}><Form.Item name="name" label="Tên Máy" rules={[{ required: true }]}><Input placeholder="XPS 15..." /></Form.Item></Col>
-          </Row>
-          <Divider orientation={"left" as any} style={{ margin: '10px 0' }}>Cấu Hình</Divider>
-          <Row gutter={16}>
-            <Col span={12}><Form.Item name="cpu" label="CPU"><Input placeholder="Core i7 12th" /></Form.Item></Col>
-            <Col span={12}><Form.Item name="ram" label="RAM"><Input placeholder="16GB" /></Form.Item></Col>
-            <Col span={12}><Form.Item name="storage" label="SSD"><Input placeholder="512GB" /></Form.Item></Col>
-            <Col span={12}><Form.Item name="battery" label="Pin"><Input placeholder="100%" /></Form.Item></Col>
-            <Col span={24}><Form.Item name="mdm" label="MDM?" valuePropName="checked"><Switch checkedChildren="Có" unCheckedChildren="Không" /></Form.Item></Col>
-          </Row>
-        </Form>
-      </Modal>
-
-      {/* Modal: Nhập Kho */}
-      <Modal title="Order Máy Mới (Nhập Hàng)" open={isImportModalOpen} confirmLoading={isSubmitting} onCancel={() => setIsImportModalOpen(false)} onOk={() => importForm.submit()} okText="Lưu" width={800}>
+      {/* Modal: Nhập Kho (with Inline Model Creation) */}
+      <Modal title="Order Máy Mới (Nhập Hàng)" open={isImportModalOpen} confirmLoading={isSubmitting} onCancel={() => { setIsImportModalOpen(false); setIsCreatingModel(false); }} onOk={() => importForm.submit()} okText="Nhập Kho" width={800}
+        okButtonProps={{ disabled: isCreatingModel }}
+      >
         <Form form={importForm} layout="vertical" onFinish={handleImport}>
-          <Form.Item name="model_id" label="Chọn Dòng Máy" rules={[{ required: true }]}>
+          {/* Model Selection */}
+          <Form.Item name="model_id" label="Chọn Dòng Máy" rules={[{ required: !isCreatingModel }]} style={isCreatingModel ? { display: 'none' } : {}}>
             <Select showSearch size="large" placeholder="Gõ tên máy để tìm..." optionFilterProp="label"
-              options={modelsData.map(m => ({ value: m.id, label: getModelLabelWithSpecs(m), raw: m }))}
+              options={[
+                { value: '__CREATE_NEW__', label: '＋ Tạo model mới...', raw: null },
+                ...localModels.map(m => ({ value: m.id, label: getModelLabelWithSpecs(m), raw: m })),
+              ]}
+              onChange={(val) => {
+                if (val === '__CREATE_NEW__') {
+                  importForm.setFieldValue('model_id', undefined);
+                  setIsCreatingModel(true);
+                }
+              }}
               optionRender={(option) => {
+                if (option.data.value === '__CREATE_NEW__') {
+                  return (<div style={{ padding: '8px 0', color: '#0A84FF', fontWeight: 600, fontSize: 15 }}>
+                    <PlusOutlined style={{ marginRight: 8 }} />Tạo model mới...
+                  </div>);
+                }
                 const m = option.data.raw;
+                if (!m) return option.label;
                 return (<div style={{ padding: '4px 0', borderBottom: '1px solid #f0f0f0' }}>
                   <div style={{ fontWeight: 'bold', fontSize: 15 }}>{m.brand} {m.name} {m.specs?.mdm ? <Tag color="red">MDM</Tag> : ''}</div>
                   <div style={{ fontSize: 13, color: '#8c8c8c' }}>CPU: {m.specs?.cpu || '?'} | RAM: {m.specs?.ram || '?'} | SSD: {m.specs?.storage || '?'}</div>
@@ -506,6 +517,35 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
               }}
             />
           </Form.Item>
+
+          {/* Inline Model Creation */}
+          {isCreatingModel && (
+            <div style={{ background: '#f0f5ff', borderRadius: 12, padding: '16px 20px', marginBottom: 16, border: '1px solid #adc6ff' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <Text strong style={{ fontSize: 15, color: '#0A84FF' }}><PlusOutlined /> Tạo Model Mới</Text>
+                <Button size="small" type="link" danger onClick={() => setIsCreatingModel(false)}>Hủy</Button>
+              </div>
+              <Row gutter={12}>
+                <Col span={12}><Form.Item name="new_brand" label="Hãng" rules={[{ required: true, message: 'Nhập hãng' }]} style={{ marginBottom: 8 }}><Input placeholder="Dell, Apple..." /></Form.Item></Col>
+                <Col span={12}><Form.Item name="new_name" label="Tên Máy" rules={[{ required: true, message: 'Nhập tên' }]} style={{ marginBottom: 8 }}><Input placeholder="XPS 15, MacBook Pro..." /></Form.Item></Col>
+              </Row>
+              <Divider style={{ margin: '8px 0', borderColor: '#d6e4ff' }} />
+              <Row gutter={12}>
+                <Col span={8}><Form.Item name="new_cpu" label="CPU" style={{ marginBottom: 8 }}><Input placeholder="i7 12th" /></Form.Item></Col>
+                <Col span={8}><Form.Item name="new_ram" label="RAM" style={{ marginBottom: 8 }}><Input placeholder="16GB" /></Form.Item></Col>
+                <Col span={8}><Form.Item name="new_storage" label="SSD" style={{ marginBottom: 8 }}><Input placeholder="512GB" /></Form.Item></Col>
+                <Col span={8}><Form.Item name="new_battery" label="Pin" style={{ marginBottom: 8 }}><Input placeholder="100%" /></Form.Item></Col>
+                <Col span={8}><Form.Item name="new_mdm" label="MDM?" valuePropName="checked" style={{ marginBottom: 8 }}><Switch checkedChildren="Có" unCheckedChildren="Không" /></Form.Item></Col>
+                <Col span={8} style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8 }}>
+                  <Button type="primary" onClick={handleCreateModelInline} loading={isSubmitting}
+                    style={{ width: '100%', borderRadius: 8, background: '#0A84FF', fontWeight: 600 }}
+                  >Lưu Model</Button>
+                </Col>
+              </Row>
+            </div>
+          )}
+
+          {/* Quantity & Items */}
           <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Text strong>Số lượng:</Text>
             <InputNumber min={1} max={50} value={importQuantity} onChange={(val) => setImportQuantity(val || 1)} />

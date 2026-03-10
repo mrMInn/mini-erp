@@ -24,6 +24,20 @@ export class InventoryRepo {
     return data;
   }
 
+  static async getInventoryItemWithModel(id: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('inventory')
+      .select(`
+        *,
+        models (*)
+      `)
+      .eq('id', id)
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
   // Removed deprecated getSaleDetails
 
   static async getAllModels() {
