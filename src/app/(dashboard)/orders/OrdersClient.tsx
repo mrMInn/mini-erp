@@ -266,14 +266,14 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
         {
             title: 'Sản Phẩm', width: 280,
             render: (r: any) => (
-                <Space direction="vertical" size={2}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {(r.order_items || []).map((item: any, idx: number) => (
                         <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <Text>{getFullName(item.inventory?.models)}</Text>
                             {item.status === 'refunded' && <Tag color="orange">Đã hoàn</Tag>}
                         </div>
                     ))}
-                </Space>
+                </div>
             ),
         },
         {

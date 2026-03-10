@@ -18,13 +18,13 @@ const { Search } = Input;
 const formatSpecs = (specsObj: any) => {
   if (!specsObj) return null;
   return (
-    <Space size={[0, 4]} wrap style={{ marginTop: 4 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 4px', marginTop: 4 }}>
       {specsObj.cpu && <Tag className="spec-tag" color="blue">{specsObj.cpu}</Tag>}
       {specsObj.ram && <Tag className="spec-tag" color="cyan">RAM {specsObj.ram}</Tag>}
       {specsObj.storage && <Tag className="spec-tag" color="purple">SSD {specsObj.storage}</Tag>}
       {specsObj.battery && <Tag className="spec-tag" color="green">Pin: {specsObj.battery}</Tag>}
       {specsObj.mdm && <Tag className="spec-tag" color="red" style={{ fontWeight: 'bold' }}>CÓ MDM</Tag>}
-    </Space>
+    </div>
   );
 };
 
@@ -425,7 +425,7 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
     <div className="inventory-page">
       {/* HEADER */}
       <div className="inv-header">
-        <h2 className="inv-title">📦 Kho Hàng</h2>
+        <h2 className="inv-title">Kho Hàng</h2>
         <Button
           type="primary"
           icon={<RocketOutlined />}

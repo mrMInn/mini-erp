@@ -64,10 +64,10 @@ export default function DashboardLayout({
     <div className={`app-layout ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
       {/* Mobile Top Header */}
       <header className="mobile-header">
-        <div className="mobile-logo">
-          <div className="sidebar-logo-icon">KM</div>
-          <span className="sidebar-logo-text">Digital</span>
-        </div>
+        <Link href="/" className="mobile-logo-wide">
+          <span className="logo-startup">Startup</span>
+          <span className="logo-brand">KM - SĐ</span>
+        </Link>
         <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           {isMobileMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
         </button>
@@ -78,10 +78,10 @@ export default function DashboardLayout({
 
       <div className="sidebar-wrap">
         <nav className="sidebar">
-          <div className="sidebar-logo">
-            <div className="sidebar-logo-icon">KM</div>
-            <span className="sidebar-logo-text">Digital</span>
-          </div>
+          <Link href="/" className="sidebar-logo-wide">
+            <span className="logo-startup">Startup</span>
+            <span className="logo-brand">KM - SĐ</span>
+          </Link>
           <div className="sidebar-nav">
             {menuItems.map((item) => (
               <Link
