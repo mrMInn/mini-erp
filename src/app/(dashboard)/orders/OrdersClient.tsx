@@ -249,19 +249,10 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
 
     const columns: any[] = [
         {
-            title: 'Ngày Bán', dataIndex: 'sale_date', width: 130,
-            render: (v: string) => v ? dayjs(v).format('DD/MM/YYYY HH:mm') : '-',
-            sorter: (a: any, b: any) => dayjs(a.sale_date).unix() - dayjs(b.sale_date).unix(),
-            defaultSortOrder: 'descend' as const,
-        },
-        {
-            title: 'Khách Hàng',
-            render: (r: any) => (
-                <div>
-                    <Text strong>{r.customers?.full_name || r.customers?.name || 'Ẩn danh'}</Text><br />
-                    <Text style={{ fontSize: 12, color: '#86868b' }}>📱 {r.customers?.phone || '-'}</Text>
-                </div>
-            ),
+            title: 'STT',
+            render: (_: any, __: any, idx: number) => <Text style={{ color: '#86868b', fontWeight: 500 }}>{idx + 1}</Text>,
+            width: 60,
+            align: 'center',
         },
         {
             title: 'Sản Phẩm', width: 280,
@@ -277,6 +268,12 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
             ),
         },
         {
+            title: 'Ngày Bán', dataIndex: 'sale_date', width: 130,
+            render: (v: string) => v ? dayjs(v).format('DD/MM/YYYY HH:mm') : '-',
+            sorter: (a: any, b: any) => dayjs(a.sale_date).unix() - dayjs(b.sale_date).unix(),
+            defaultSortOrder: 'descend' as const,
+        },
+        {
             title: 'Tổng Thu', dataIndex: 'total_amount', width: 140,
             render: (v: number) => <Text strong style={{ color: '#0A84FF' }}>{formatCurrency(v)}</Text>,
             sorter: (a: any, b: any) => a.total_amount - b.total_amount,
@@ -286,12 +283,9 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
             render: (r: any) => {
                 const profit = (r.order_items || []).reduce((sum: number, i: any) =>
                     sum + (Number(i.sale_price || 0) - Number(i.historical_cost || 0)), 0);
-                return <Text style={{ color: profit >= 0 ? '#34C759' : '#FF3B30', fontWeight: 'bold' }}>{formatCurrency(profit)}</Text>;
+                const prefix = profit > 0 ? '+' : (profit < 0 ? '-' : '');
+                return <Text style={{ color: profit >= 0 ? '#34C759' : '#FF3B30', fontWeight: 'bold' }}>{prefix}{formatCurrency(Math.abs(profit))}</Text>;
             },
-        },
-        {
-            title: 'Người Bán', dataIndex: 'seller_email', width: 150,
-            render: (v: string) => <Text style={{ color: '#86868b' }}>{v || '-'}</Text>,
         },
         {
             title: '', width: 100,
@@ -308,7 +302,7 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
     return (
         <div className="orders-page">
             <div className="orders-header">
-                <h2 className="orders-title">📋 Lịch Sử Đơn Hàng</h2>
+                <h2 className="orders-title">Lịch Sử Đơn Hàng</h2>
                 <Input
                     className="orders-search"
                     placeholder="Tìm theo tên khách, SĐT, serial..."
@@ -366,7 +360,7 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
                                 <Descriptions.Item label="Thời Gian Mua">
                                     <Text style={{ fontSize: 14, color: '#1d1d1f', fontWeight: 500 }}>{dayjs(selectedOrder.sale_date).format('DD/MM/YYYY HH:mm')}</Text>
                                 </Descriptions.Item>
-                                <Descriptions.Item label="Nhân Viên Chốt">
+                                <Descriptions.Item label="Người Bán">
                                     <Text style={{ fontSize: 14, color: '#1d1d1f' }}>{selectedOrder.seller_email}</Text>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Trạng Thái Đơn">

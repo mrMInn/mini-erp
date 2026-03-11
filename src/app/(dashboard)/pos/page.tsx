@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Input, InputNumber, Button, message, Tag, Space, Radio } from 'antd';
-import { PlusOutlined, DeleteOutlined, CreditCardOutlined, SearchOutlined, PhoneOutlined, UserOutlined, LinkOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, PlusOutlined, DeleteOutlined, CreditCardOutlined, SearchOutlined, PhoneOutlined, UserOutlined, LinkOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { createClient } from '@/lib/supabase/client';
 import { checkoutOrderAction, getCustomerByPhoneAction } from '@/actions/pos.actions';
 import { getFullName } from '@/utils/helpers';
@@ -178,111 +178,116 @@ export default function POSPage() {
         </div>
 
         {/* ══════ RIGHT: GIỎ HÀNG + CHECKOUT (40%) ══════ */}
-        <div className="pos-card">
-          <h3 className="pos-card-title">
-            🛒 Giỏ Hàng
-            {cart.length > 0 && <span className="count">{cart.length} máy</span>}
-          </h3>
-
-          {/* Cart Items */}
-          {cart.length === 0 ? (
-            <div className="cart-empty">Chưa có máy nào — quét serial hoặc nhấn + để thêm</div>
-          ) : (
-            <div className="cart-list">
-              {cart.map(item => {
-                const profit = item.sale_price - item.cost_price;
-                return (
-                  <div key={item.inventory_id} className="cart-item">
-                    <div className="cart-item-header">
-                      <div>
-                        <div className="cart-item-name">{item.model_name}</div>
-                        {formatSpecs(item.specs)}
-                        <div className="cart-item-serial">SN: <span style={{ color: '#1d1d1f' }}>{item.serial}</span> · Vốn: <span style={{ color: '#0A84FF', fontWeight: 600 }}>{fmtVND(item.cost_price)}</span></div>
-                      </div>
-                      <Button type="text" danger icon={<DeleteOutlined />} size="small"
-                        onClick={() => handleRemoveFromCart(item.inventory_id)} />
-                    </div>
-                    <div className="cart-item-fields">
-                      <div className="cart-field">
-                        <label>Giá bán</label>
-                        <InputNumber
-                          value={item.sale_price}
-                          formatter={(v: any) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          onChange={(val: any) => updateCartItem(item.inventory_id, 'sale_price', Number(val))}
-                        />
-                      </div>
-                      <div className="cart-field" style={{ maxWidth: 80 }}>
-                        <label>BH (ngày)</label>
-                        <InputNumber
-                          min={0} max={3650}
-                          value={item.warranty_days}
-                          onChange={(val: any) => updateCartItem(item.inventory_id, 'warranty_days', Number(val))}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+        <div className="pos-card cart-container-card">
+          <div className="card-header cart-header-main">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ShoppingCartOutlined style={{ color: '#0A84FF' }} />
+              <span style={{ fontWeight: 600, fontSize: 13, color: '#1d1d1f' }}>Giỏ Hàng</span>
             </div>
-          )}
+            {cart.length > 0 && <span className="count-badge">{cart.length} máy</span>}
+          </div>
 
-          {/* Customer Info */}
-          <Form form={form} layout="vertical" onFinish={onFinish} className="customer-section">
-            <div style={{ fontSize: 12, color: '#86868b', fontWeight: 600, marginBottom: 4 }}>Thông tin khách hàng</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div>
-                <Form.Item name="phone" rules={[{ required: true, message: 'Nhập SĐT!' }]} style={{ margin: 0 }}>
+          <div className="cart-list-wrapper">
+            {cart.length === 0 ? (
+              <div className="cart-empty">Chưa có máy nào.</div>
+            ) : (
+              <div className="cart-list">
+                {cart.map(item => {
+                  const profit = item.sale_price - item.cost_price;
+                  return (
+                    <div key={item.inventory_id} className={`cart-item-smart ${profit < 0 ? 'is-loss' : ''}`}>
+                      <div className="cart-item-info">
+                        <div style={{ flex: 1 }}>
+                          <div className="cart-item-name">{item.model_name}</div>
+                          {formatSpecs(item.specs)}
+                          <div className="cart-item-serial-row">
+                            <span className="label">SN:</span> <span className="val">{item.serial}</span>
+                            <span className="dot">·</span>
+                            <span className="label">Vốn:</span> <span className="val cost">{fmtVND(item.cost_price)}</span>
+                          </div>
+                        </div>
+                        <Button type="text" danger icon={<DeleteOutlined />} size="small"
+                          className="cart-remove-btn"
+                          onClick={() => handleRemoveFromCart(item.inventory_id)} />
+                      </div>
+
+                      <div className="cart-item-grid">
+                        <div className="cart-grid-item">
+                          <label><CreditCardOutlined /> Giá bán</label>
+                          <InputNumber
+                            variant="borderless"
+                            value={item.sale_price}
+                            formatter={(v: any) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            onChange={(val: any) => updateCartItem(item.inventory_id, 'sale_price', Number(val))}
+                          />
+                        </div>
+                        <div className="cart-grid-item">
+                          <label><InfoCircleOutlined /> BH (ngày)</label>
+                          <InputNumber
+                            variant="borderless"
+                            min={0} max={3650}
+                            value={item.warranty_days}
+                            onChange={(val: any) => updateCartItem(item.inventory_id, 'warranty_days', Number(val))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Customer Info — Option C: Smart Card */}
+          <Form form={form} layout="vertical" onFinish={onFinish} className="customer-card-wrap">
+            <div className={`customer-card ${isReturning ? 'is-returning' : ''}`}>
+              <div className="card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <UserOutlined style={{ color: '#0A84FF' }} />
+                  <span style={{ fontWeight: 600, fontSize: 13, color: '#1d1d1f' }}>Thông tin khách hàng</span>
+                </div>
+                {isReturning && <Tag color="success" className="returning-tag">KHÁCH QUEN</Tag>}
+              </div>
+
+              <div className="card-body-grid">
+                <Form.Item name="phone" rules={[{ required: true, message: 'Nhập SĐT!' }]} className="card-input-item">
                   <Input
-                    size="small"
-                    prefix={<PhoneOutlined />}
+                    variant="borderless"
+                    prefix={<PhoneOutlined style={{ color: '#86868b' }} />}
                     placeholder="Số điện thoại"
                     onBlur={handlePhoneBlur}
-                    style={isReturning ? {
-                      borderColor: '#34C759',
-                      boxShadow: '0 0 0 3px rgba(52, 199, 89, 0.15)',
-                    } : undefined}
                   />
                 </Form.Item>
-                {isReturning && (
-                  <div style={{ fontSize: 11, color: '#34C759', fontWeight: 600, marginTop: 4, animation: 'fadeIn 0.3s ease' }}>
-                    ✅ Khách quen
-                  </div>
-                )}
+                <Form.Item name="full_name" rules={[{ required: true, message: 'Nhập tên!' }]} className="card-input-item">
+                  <Input
+                    variant="borderless"
+                    prefix={<UserOutlined style={{ color: '#86868b' }} />}
+                    placeholder="Tên khách hàng"
+                    className={nameHighlight ? 'highlight-pulse' : ''}
+                  />
+                </Form.Item>
+                <Form.Item name="facebook" className="card-input-item span-2">
+                  <Input
+                    variant="borderless"
+                    prefix={<LinkOutlined style={{ color: '#86868b' }} />}
+                    placeholder="Link Facebook (Tùy chọn)"
+                  />
+                </Form.Item>
               </div>
-              <Form.Item name="full_name" rules={[{ required: true, message: 'Nhập tên!' }]} style={{ margin: 0 }}>
-                <Input
-                  size="small"
-                  prefix={<UserOutlined />}
-                  placeholder="Tên khách hàng"
-                  style={nameHighlight ? {
-                    backgroundColor: 'rgba(255, 214, 10, 0.15)',
-                    transition: 'background-color 1.5s ease',
-                  } : { transition: 'background-color 1.5s ease' }}
-                />
-              </Form.Item>
-              <Form.Item name="facebook" style={{ margin: 0, gridColumn: 'span 2' }}>
-                <Input
-                  size="small"
-                  prefix={<LinkOutlined />}
-                  placeholder="Link Facebook khách hàng (Tùy chọn)"
-                />
-              </Form.Item>
-            </div>
 
-            {/* Marketing Source (Option 3) */}
-            <div className="marketing-section">
-              <div style={{ fontSize: 12, color: '#86868b', fontWeight: 600, marginBottom: 4 }}>Nguồn khách hàng (Marketing)</div>
-              <Form.Item name="marketing_source" initialValue="Chưa rõ" style={{ margin: 0 }}>
-                <Radio.Group className="marketing-tags" optionType="button" buttonStyle="solid" size="small">
-                  <Radio.Button value="Facebook">Facebook</Radio.Button>
-                  <Radio.Button value="Tiktok">Tiktok</Radio.Button>
-                  <Radio.Button value="Voz">Voz</Radio.Button>
-                  <Radio.Button value="Người quen">Người quen</Radio.Button>
-                  <Radio.Button value="Khách cũ">Khách cũ</Radio.Button>
-                  <Radio.Button value="Vãng lai">Vãng lai</Radio.Button>
-                  <Radio.Button value="Chưa rõ">Khác</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
+              <div className="marketing-pills-wrap">
+                <Form.Item name="marketing_source" initialValue="Chưa rõ" noStyle>
+                  <Radio.Group className="smart-pills" optionType="button" buttonStyle="solid" size="small">
+                    <Radio.Button value="Facebook" className="pill-fb">Facebook</Radio.Button>
+                    <Radio.Button value="Tiktok" className="pill-tiktok">Tiktok</Radio.Button>
+                    <Radio.Button value="Voz" className="pill-voz">Voz</Radio.Button>
+                    <Radio.Button value="Người quen" className="pill-referral">Người quen</Radio.Button>
+                    <Radio.Button value="Khách cũ" className="pill-old">Khách cũ</Radio.Button>
+                    <Radio.Button value="Vãng lai" className="pill-walkin">Vãng lai</Radio.Button>
+                    <Radio.Button value="Chưa rõ" className="pill-other">Khác</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
             </div>
 
             {/* Checkout Bar */}
