@@ -16,14 +16,20 @@ const { Search } = Input;
 // ═══════════ HELPERS ═══════════
 const formatSpecs = (specsObj: any) => {
     if (!specsObj) return null;
+    const parts = [
+        specsObj.cpu,
+        specsObj.ram ? `RAM ${specsObj.ram}` : null,
+        specsObj.storage ? `SSD ${specsObj.storage}` : null,
+        specsObj.battery ? `Pin ${specsObj.battery}` : null,
+    ].filter(Boolean);
+
+    if (parts.length === 0 && !specsObj.mdm) return null;
+
     return (
-        <Space size={[0, 4]} wrap style={{ marginTop: 4 }}>
-            {specsObj.cpu && <Tag color="blue" style={{ border: 'none', background: 'rgba(10,132,255,0.1)' }}>{specsObj.cpu}</Tag>}
-            {specsObj.ram && <Tag color="cyan" style={{ border: 'none', background: 'rgba(50,173,230,0.1)', color: '#0071a4' }}>RAM {specsObj.ram}</Tag>}
-            {specsObj.storage && <Tag color="purple" style={{ border: 'none', background: 'rgba(175,82,222,0.1)', color: '#8944ab' }}>SSD {specsObj.storage}</Tag>}
-            {specsObj.battery && <Tag color="green" style={{ border: 'none', background: 'rgba(52,199,89,0.1)', color: '#248a3d' }}>Pin: {specsObj.battery}</Tag>}
-            {specsObj.mdm && <Tag color="red" style={{ border: 'none', background: 'rgba(255,59,48,0.1)', color: '#c41a12', fontWeight: 600 }}>CÓ MDM</Tag>}
-        </Space>
+        <div className="specs-technical">
+            {parts.join(' / ')}
+            {specsObj.mdm && <span className="mdm-badge">MDM</span>}
+        </div>
     );
 };
 
@@ -32,6 +38,8 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
     const [searchText, setSearchText] = useState('');
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 15;
     const [refundFee, setRefundFee] = useState(0);
     const [currentUser, setCurrentUser] = useState('');
     const supabase = createClient();
@@ -250,7 +258,11 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
     const columns: any[] = [
         {
             title: 'STT',
-            render: (_: any, __: any, idx: number) => <Text style={{ color: '#86868b', fontWeight: 500 }}>{idx + 1}</Text>,
+            render: (_: any, __: any, idx: number) => (
+                <Text style={{ color: '#86868b', fontWeight: 500 }}>
+                    {(currentPage - 1) * PAGE_SIZE + idx + 1}
+                </Text>
+            ),
             width: 60,
             align: 'center',
         },
@@ -318,7 +330,13 @@ export default function OrdersClient({ ordersData }: { ordersData: any[] }) {
                     columns={columns}
                     dataSource={filteredOrders}
                     rowKey="id"
-                    pagination={{ pageSize: 15, showSizeChanger: true, showTotal: (total) => `Tổng: ${total} đơn` }}
+                    pagination={{ 
+                        current: currentPage,
+                        pageSize: PAGE_SIZE, 
+                        showSizeChanger: true, 
+                        showTotal: (total) => `Tổng: ${total} đơn`,
+                        onChange: (page) => setCurrentPage(page)
+                    }}
                     size="middle"
                     scroll={{ x: 900 }}
                 />

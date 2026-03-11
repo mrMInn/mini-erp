@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, Tag, Button, Space, Typography, Modal, Form, Input, InputNumber, Row, Col, Switch, Select, Popconfirm, message, Divider, Upload, DatePicker } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CameraOutlined, RocketOutlined, SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, CameraOutlined, RocketOutlined, SearchOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { removeVietnameseTones, getFullName } from '@/utils/helpers';
 import { createModelAction, importInventoryAction, updateInventoryAction, deleteInventoryAction } from '@/actions/inventory.actions';
 import { useRouter } from 'next/navigation';
@@ -17,13 +17,19 @@ const { Search } = Input;
 // ═══════════ HELPERS ═══════════
 const formatSpecs = (specsObj: any) => {
   if (!specsObj) return null;
+  const parts = [
+    specsObj.cpu,
+    specsObj.ram ? `RAM ${specsObj.ram}` : null,
+    specsObj.storage ? `SSD ${specsObj.storage}` : null,
+    specsObj.battery ? `Pin ${specsObj.battery}` : null,
+  ].filter(Boolean);
+
+  if (parts.length === 0 && !specsObj.mdm) return null;
+
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 4px', marginTop: 4 }}>
-      {specsObj.cpu && <Tag className="spec-tag" color="blue">{specsObj.cpu}</Tag>}
-      {specsObj.ram && <Tag className="spec-tag" color="cyan">RAM {specsObj.ram}</Tag>}
-      {specsObj.storage && <Tag className="spec-tag" color="purple">SSD {specsObj.storage}</Tag>}
-      {specsObj.battery && <Tag className="spec-tag" color="green">Pin: {specsObj.battery}</Tag>}
-      {specsObj.mdm && <Tag className="spec-tag" color="red" style={{ fontWeight: 'bold' }}>CÓ MDM</Tag>}
+    <div className="specs-technical">
+      {parts.join(' / ')}
+      {specsObj.mdm && <span className="mdm-badge">MDM</span>}
     </div>
   );
 };
@@ -54,6 +60,8 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [importQuantity, setImportQuantity] = useState(1);
   const [editingId, setEditingId] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
   const [editingRecord, setEditingRecord] = useState<any>(null);
   const [scanningIndex, setScanningIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -235,7 +243,16 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
 
   // ═══════════ COLUMNS ═══════════
   const baseColumns = [
-    { title: 'STT', render: (_: any, __: any, idx: number) => <span style={{ color: '#94a3b8', fontWeight: 600 }}>{idx + 1}</span>, width: 50, align: 'center' as const },
+    { 
+      title: 'STT', 
+      render: (_: any, __: any, idx: number) => (
+        <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+          {(currentPage - 1) * PAGE_SIZE + idx + 1}
+        </span>
+      ), 
+      width: 50, 
+      align: 'center' as const 
+    },
     {
       title: 'Sản Phẩm',
       width: 280,
@@ -423,46 +440,56 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
 
   return (
     <div className="inventory-page">
-      {/* HEADER */}
-      <div className="inv-header">
-        <h2 className="inv-title">Kho Hàng</h2>
-        <Button
-          type="primary"
-          icon={<RocketOutlined />}
-          onClick={() => { setIsCreatingModel(false); setIsImportModalOpen(true); }}
-          style={{
-            background: 'linear-gradient(135deg, #0A84FF, #0070E0)', border: 'none', borderRadius: 12, fontWeight: 600, height: 40, padding: '0 20px',
-            boxShadow: '0 2px 12px rgba(10,132,255,0.3)',
-          }}
-        >
-          Nhập Kho
-        </Button>
+      {/* HEADER (SYNCED WITH POS) */}
+      <div className="pos-header">
+        <div className="pos-title-row">
+          <DatabaseOutlined className="pos-main-icon" />
+          <h2 className="pos-title">Quản Lý Kho Hàng</h2>
+        </div>
+        <div className="pos-header-line" />
       </div>
 
-      {/* SEARCH */}
-      <div className="inv-search">
-        <Input
-          placeholder="Tìm theo tên, cấu hình, serial..."
-          allowClear
-          onChange={(e) => setSearchText(e.target.value)}
-          size="large"
-          prefix={<SearchOutlined style={{ color: '#86868b' }} />}
-          className="inv-search-input"
-        />
-      </div>
-
-      {/* FILTER PILLS */}
-      <div className="inv-filters">
-        {FILTER_CONFIG.map(f => (
-          <button
-            key={f.key}
-            className={`filter-pill status-${f.key} ${activeFilter === f.key ? 'active' : ''}`}
-            onClick={() => setActiveFilter(f.key)}
+      <div className="inv-controls-card">
+        {/* SEARCH & ACTION ROW */}
+        <div className="inv-search-row">
+          <Input
+            placeholder="Tìm theo tên, cấu hình, serial..."
+            allowClear
+            onChange={(e) => setSearchText(e.target.value)}
+            size="large"
+            prefix={<SearchOutlined style={{ color: '#86868b' }} />}
+            className="inv-search-input"
+          />
+          <Button
+            type="primary"
+            icon={<RocketOutlined />}
+            onClick={() => { setIsCreatingModel(false); setIsImportModalOpen(true); }}
+            className="neu-btn-primary elite-btn"
           >
-            {f.emoji} {f.label}
-            <span className="filter-count">{counts[f.key]}</span>
-          </button>
-        ))}
+            Nhập Kho Mới
+          </Button>
+        </div>
+
+        {/* FILTER SEGMENTED CONTROL */}
+        <div className="inv-segmented-control">
+          <div className="inv-segmented-track">
+            {/* Active background slider (CSS will handle positioning based on activeFilter) */}
+            <div 
+              className={`inv-segmented-slider active-${activeFilter}`} 
+            />
+            {FILTER_CONFIG.map(f => (
+              <button
+                key={f.key}
+                className={`inv-segmented-item ${activeFilter === f.key ? 'active' : ''}`}
+                onClick={() => setActiveFilter(f.key)}
+              >
+                <span className="item-emoji">{f.emoji}</span>
+                <span className="item-label">{f.label}</span>
+                <span className="item-count">{counts[f.key]}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* SEARCH RESULT BANNER */}
@@ -478,7 +505,13 @@ export default function InventoryTable({ inventoryData, modelsData }: { inventor
           columns={columns}
           dataSource={displayData}
           rowKey="id"
-          pagination={{ pageSize: 20, showSizeChanger: false, showTotal: (total) => <span style={{ color: '#94a3b8', fontSize: 13 }}>{total} máy</span> }}
+          pagination={{ 
+            current: currentPage,
+            pageSize: PAGE_SIZE, 
+            showSizeChanger: false, 
+            showTotal: (total) => <span style={{ color: '#94a3b8', fontSize: 13 }}>{total} máy</span>,
+            onChange: (page) => setCurrentPage(page)
+          }}
           size="small"
           scroll={{ x: 900 }}
         />

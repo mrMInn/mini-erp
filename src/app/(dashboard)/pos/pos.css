@@ -15,15 +15,39 @@
 }
 
 .pos-header {
-    margin-bottom: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pos-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pos-main-icon {
+    font-size: 24px;
+    color: #0A84FF;
+    background: rgba(10, 132, 255, 0.1);
+    padding: 8px;
+    border-radius: 12px;
 }
 
 .pos-title {
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
     color: #1d1d1f;
     margin: 0;
+}
+
+.pos-header-line {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, rgba(10, 132, 255, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
+    margin-top: 4px;
 }
 
 @media (max-width: 640px) {
@@ -109,31 +133,66 @@
     font-size: 15px;
 }
 
-/* ═══════════ PRODUCT LIST ═══════════ */
-.product-list {
+/* ═══════════ PRODUCT KỆ HÀNG (SMART STYLE) ═══════════ */
+.product-container-card {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.product-header-main {
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.02);
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.product-search-wrapper {
+    padding: 10px 14px;
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.product-search-wrapper .ant-input-affix-wrapper {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-radius: 10px !important;
+    padding: 6px 14px !important;
+    transition: all 0.2s ease;
+}
+
+.product-search-wrapper .ant-input-affix-wrapper:focus,
+.product-search-wrapper .ant-input-affix-wrapper-focused {
+    background: #fff !important;
+    border-color: rgba(10, 132, 255, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.08) !important;
+}
+
+.product-list-wrapper {
     flex: 1;
     overflow-y: auto;
-    padding-right: 4px;
+    padding: 14px;
 }
 
 .product-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.02);
-    border: 1px solid transparent;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    margin-bottom: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-item:hover {
-    background: rgba(10, 132, 255, 0.04);
-    border-color: rgba(10, 132, 255, 0.15);
+    background: rgba(10, 132, 255, 0.02);
+    border-color: rgba(10, 132, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.06);
 }
 
 .product-name {
@@ -566,4 +625,28 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ═══════════ TECHNICAL SPECS (OPTION A) ═══════════ */
+.specs-technical {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #515154;
+    padding: 2px 0;
+    margin-bottom: 2px;
+}
+
+.specs-technical .mdm-badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: #FF3B30;
+    background: rgba(255, 59, 48, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }

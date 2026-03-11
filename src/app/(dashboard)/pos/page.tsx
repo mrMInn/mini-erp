@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Input, InputNumber, Button, message, Tag, Space, Radio } from 'antd';
-import { ShoppingCartOutlined, PlusOutlined, DeleteOutlined, CreditCardOutlined, SearchOutlined, PhoneOutlined, UserOutlined, LinkOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, PlusOutlined, DeleteOutlined, CreditCardOutlined, SearchOutlined, PhoneOutlined, UserOutlined, LinkOutlined, InfoCircleOutlined, LaptopOutlined, ShopOutlined, CheckOutlined } from '@ant-design/icons';
 import { createClient } from '@/lib/supabase/client';
 import { checkoutOrderAction, getCustomerByPhoneAction } from '@/actions/pos.actions';
 import { getFullName } from '@/utils/helpers';
@@ -12,15 +12,20 @@ const fmtVND = (v: number) => new Intl.NumberFormat('vi-VN').format(v) + 'đ';
 
 const formatSpecs = (specsObj: any) => {
   if (!specsObj) return null;
-  const tagStyle = { border: 'none', padding: '2px 6px', fontSize: 13, fontWeight: 500 };
+  const parts = [
+    specsObj.cpu,
+    specsObj.ram ? `RAM ${specsObj.ram}` : null,
+    specsObj.storage ? `SSD ${specsObj.storage}` : null,
+    specsObj.battery ? `Pin ${specsObj.battery}` : null,
+  ].filter(Boolean);
+
+  if (parts.length === 0 && !specsObj.mdm) return null;
+
   return (
-    <Space size={[0, 4]} wrap style={{ marginTop: 4, marginBottom: 4 }}>
-      {specsObj.cpu && <Tag color="blue" style={{ ...tagStyle, background: 'rgba(10,132,255,0.1)' }}>{specsObj.cpu}</Tag>}
-      {specsObj.ram && <Tag color="cyan" style={{ ...tagStyle, background: 'rgba(50,173,230,0.1)', color: '#0071a4' }}>RAM {specsObj.ram}</Tag>}
-      {specsObj.storage && <Tag color="purple" style={{ ...tagStyle, background: 'rgba(175,82,222,0.1)', color: '#8944ab' }}>SSD {specsObj.storage}</Tag>}
-      {specsObj.battery && <Tag color="green" style={{ ...tagStyle, background: 'rgba(52,199,89,0.1)', color: '#248a3d' }}>Pin: {specsObj.battery}</Tag>}
-      {specsObj.mdm && <Tag color="red" style={{ ...tagStyle, background: 'rgba(255,59,48,0.1)', color: '#c41a12', fontWeight: 600 }}>CÓ MDM</Tag>}
-    </Space>
+    <div className="specs-technical">
+      {parts.join(' / ')}
+      {specsObj.mdm && <span className="mdm-badge">MDM</span>}
+    </div>
   );
 };
 
@@ -123,57 +128,65 @@ export default function POSPage() {
   return (
     <div className="pos-page">
       <div className="pos-header">
-        <h2 className="pos-title">Bán Hàng</h2>
+        <div className="pos-title-row">
+          <h2 className="pos-title">Bán Hàng</h2>
+        </div>
+        <div className="pos-header-line" />
       </div>
 
       <div className="pos-grid">
 
         {/* ══════ LEFT: KỆ HÀNG (60%) ══════ */}
-        <div className="pos-card">
-          <h3 className="pos-card-title">
-            💻 Máy Sẵn Bán
-            <span className="count">{available.length} máy</span>
-          </h3>
+        <div className="pos-card product-container-card">
+          <div className="card-header product-header-main">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <LaptopOutlined style={{ color: '#0A84FF' }} />
+              <span style={{ fontWeight: 600, fontSize: 13, color: '#1d1d1f' }}>Máy Sẵn Bán</span>
+            </div>
+            <span className="count-badge">{available.length} máy</span>
+          </div>
 
-          <div className="pos-search" style={{ marginBottom: 14 }}>
+          <div className="product-search-wrapper">
             <Input
               ref={searchRef}
-              size="large"
-              prefix={<SearchOutlined />}
-              placeholder="Quét serial hoặc gõ tên máy..."
+              variant="borderless"
+              prefix={<SearchOutlined style={{ color: '#86868b' }} />}
+              placeholder="Tìm kiếm bằng serial hoặc tên máy..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               allowClear
             />
           </div>
 
-          <div className="product-list">
-            {displayed.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px 0', color: '#aeaeb2', fontSize: 13 }}>
-                {searchText ? `Không tìm thấy "${searchText}"` : 'Hết hàng!'}
-              </div>
-            ) : displayed.map(item => {
-              const cost = Number(item.purchase_price) + Number(item.additional_cost || 0);
-              const specs = item.models?.specs;
-              return (
-                <div key={item.id} className="product-item" onClick={() => handleAddMachine(item)}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="product-name">
-                      {getFullName(item.models)}
-                      {specs?.mdm && <Tag color="red" style={{ marginLeft: 8, fontSize: 10, lineHeight: '16px' }}>MDM</Tag>}
-                    </div>
-                    <div className="product-serial">SN: {item.serial || 'N/A'}</div>
-                    {specs && (
-                      <div className="product-specs">
-                        {[specs.cpu, specs.ram, specs.storage].filter(Boolean).join(' · ')}
-                      </div>
-                    )}
-                  </div>
-                  <div className="product-cost">{fmtVND(cost)}</div>
-                  <Button className="add-btn" size="small" icon={<PlusOutlined />} />
+          <div className="product-list-wrapper">
+            <div className="product-list">
+              {displayed.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px 0', color: '#aeaeb2', fontSize: 13 }}>
+                  {searchText ? `Không tìm thấy "${searchText}"` : 'Hết hàng!'}
                 </div>
-              );
-            })}
+              ) : displayed.map(item => {
+                const cost = Number(item.purchase_price) + Number(item.additional_cost || 0);
+                const specs = item.models?.specs;
+                return (
+                  <div key={item.id} className="product-item" onClick={() => handleAddMachine(item)}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="product-name">
+                        {getFullName(item.models)}
+                        {specs?.mdm && <Tag color="red" style={{ marginLeft: 8, fontSize: 10, lineHeight: '16px' }}>MDM</Tag>}
+                      </div>
+                      <div className="product-serial">SN: {item.serial || 'N/A'}</div>
+                      {specs && (
+                        <div className="product-specs">
+                          {[specs.cpu, specs.ram, specs.storage].filter(Boolean).join(' · ')}
+                        </div>
+                      )}
+                    </div>
+                    <div className="product-cost">{fmtVND(cost)}</div>
+                    <Button className="add-btn" size="small" icon={<PlusOutlined />} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -222,7 +235,7 @@ export default function POSPage() {
                           />
                         </div>
                         <div className="cart-grid-item">
-                          <label><InfoCircleOutlined /> BH (ngày)</label>
+                          <label><InfoCircleOutlined /> Bảo hành (Ngày)</label>
                           <InputNumber
                             variant="borderless"
                             min={0} max={3650}
@@ -262,7 +275,7 @@ export default function POSPage() {
                   <Input
                     variant="borderless"
                     prefix={<UserOutlined style={{ color: '#86868b' }} />}
-                    placeholder="Tên khách hàng"
+                    placeholder="Tên"
                     className={nameHighlight ? 'highlight-pulse' : ''}
                   />
                 </Form.Item>
@@ -270,7 +283,7 @@ export default function POSPage() {
                   <Input
                     variant="borderless"
                     prefix={<LinkOutlined style={{ color: '#86868b' }} />}
-                    placeholder="Link Facebook (Tùy chọn)"
+                    placeholder="Link Facebook (Nếu Có)"
                   />
                 </Form.Item>
               </div>
@@ -279,7 +292,7 @@ export default function POSPage() {
                 <Form.Item name="marketing_source" initialValue="Chưa rõ" noStyle>
                   <Radio.Group className="smart-pills" optionType="button" buttonStyle="solid" size="small">
                     <Radio.Button value="Facebook" className="pill-fb">Facebook</Radio.Button>
-                    <Radio.Button value="Tiktok" className="pill-tiktok">Tiktok</Radio.Button>
+                    <Radio.Button value="Chợ Tốt" className="pill-ct">Chợ Tốt</Radio.Button>
                     <Radio.Button value="Voz" className="pill-voz">Voz</Radio.Button>
                     <Radio.Button value="Người quen" className="pill-referral">Người quen</Radio.Button>
                     <Radio.Button value="Khách cũ" className="pill-old">Khách cũ</Radio.Button>
@@ -305,7 +318,7 @@ export default function POSPage() {
                 className="checkout-btn"
                 type="primary"
                 htmlType="submit"
-                icon={<CreditCardOutlined />}
+                icon={<CheckOutlined />}
                 loading={loading}
                 disabled={cart.length === 0}
               >
